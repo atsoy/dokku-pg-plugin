@@ -219,8 +219,12 @@ case "$1" in
   postgresql:restore)
     check_postgresql_container
     check_postgresql_tool psql
-    connect_to_db
+    connect_to_db pg_restore
 
+    IP=$(get_postgresql_ip)
+    PORT=$(get_postgresql_port)
+
+    pg_restore -a -O -h $IP -p $PORT -d db
     echo
     echo "-----> $APP database restored"
     ;;
