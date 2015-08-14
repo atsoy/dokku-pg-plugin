@@ -116,5 +116,5 @@ dokku postgresql:restore foo < foo.sql
 
 In case Dokku says `pg_dump not found` when dumping or restoring database:
 ```
-sudo apt-get install postgresql-client-9.3
+sudo apt-get install postgresql-client-9.4
 ```

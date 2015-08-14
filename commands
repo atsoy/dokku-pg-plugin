@@ -224,7 +224,7 @@ case "$1" in
     IP=$(get_postgresql_ip)
     PORT=$(get_postgresql_port)
 
-    pg_restore -a -O -h $IP -p $PORT -d db
+    pg_restore -h $IP -p $PORT -d db
     echo
     echo "-----> $APP database restored"
     ;;
