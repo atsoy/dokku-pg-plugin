@@ -138,8 +138,8 @@ case "$1" in
         rm -f "$DOKKU_ROOT/.postgresql/pwd_$APP"
     fi
     # Remove persistent volume
-    if [[ -f "$DOKKU_ROOT/.postgresql/volume_$APP" ]]; then
-        rm -f "$DOKKU_ROOT/.postgresql/volume_$APP"
+    if [[ -f "/mnt/postgresql/$APP" ]]; then
+        rm -f "/mnt/postgresql/$APP"
     fi
 
     echo
