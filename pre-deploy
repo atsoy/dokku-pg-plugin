@@ -26,6 +26,7 @@ if [[ -n $PG_APP_IMAGE_ID ]]; then
     else
         echo "stopped."
 
+        [ -d "/mnt/postgresql/$APP" ] || mkdir "/mnt/postgresql/$APP"
         PG_VOLUME="/mnt/postgresql/$APP:/opt/postgresql"
 
         echo -n "       Launching $PG_APP_IMAGE... "
