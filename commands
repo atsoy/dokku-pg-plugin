@@ -3,7 +3,7 @@ set -e;
 
 # Check if name is specified
 if [[ $1 == postgresql:* ]]; then
-    if [ -z $2 ] && [ $1 != postgresql:list ]; then
+    if [ -z "$2" ] && [ "$1" != postgresql:list ]; then
         echo "You must specify an app name"
         exit 1
     else
@@ -19,8 +19,8 @@ fi
 
 # Create .postgresql diretory if not exists
 if [[ ! -d $DOKKU_ROOT/.postgresql ]]; then
-    mkdir -p $DOKKU_ROOT/.postgresql
-    chown -R dokku: $DOKKU_ROOT/.postgresql
+    mkdir -p "$DOKKU_ROOT/.postgresql"
+    chown -R dokku: "$DOKKU_ROOT/.postgresql"
 fi
 
 function check_postgresql_container() {
@@ -32,7 +32,7 @@ function check_postgresql_container() {
 
 function check_postgresql_tool() {
     local tool_name="$1"
-    if [[ $(whereis $tool_name | awk '{ print NF }') -eq 1 ]]; then
+    if [[ $(whereis "$tool_name" | awk '{ print NF }') -eq 1 ]]; then
         echo "'${tool_name}' not found. Is the package 'postgresql-client' installed?" 1>&2
         exit 1
     fi
@@ -40,19 +40,19 @@ function check_postgresql_tool() {
 
 function get_postgresql_id() {
     ID=$(docker ps | grep postgresql/"$APP":latest | awk {'print $1'})
-    echo $ID
+    echo "$ID"
 }
 
 function get_postgresql_ip() {
     ID=$(get_postgresql_id)
-    IP=$(docker inspect --format '{{ .NetworkSettings.Gateway }}' $ID)
-    echo $IP
+    IP=$(docker inspect --format '{{ .NetworkSettings.Gateway }}' "$ID")
+    echo "$IP"
 }
 
 function get_postgresql_port() {
     ID=$(get_postgresql_id)
     PORT=$(docker port "$ID" 5432 | sed 's/0.0.0.0://')
-    echo $PORT
+    echo "$PORT"
 }
 
 
@@ -61,7 +61,7 @@ function connect_to_db() {
     IP=$(get_postgresql_ip)
     PORT=$(get_postgresql_port)
 
-    psql -h $IP -p $PORT -U root db
+    psql -h "$IP" -p "$PORT" -U root db
 }
 
 case "$1" in
@@ -71,6 +71,7 @@ case "$1" in
     check_postgresql_tool psql
     connect_to_db
     ;;
+
 
   postgresql:create)
     DB_IMAGE=postgresql/$APP
