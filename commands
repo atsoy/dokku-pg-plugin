@@ -108,7 +108,7 @@ case "$1" in
             echo "Your docker version is too old, please update it"
             exit 1
         fi
-        echo $VOLUME_PATH > "/mnt/postgresql/$APP"
+        echo $VOLUME_PATH > "$DOKKU_ROOT/.postgresql/volume_$APP"
     fi
     # Link to a potential existing app
     dokku postgresql:link $APP $APP
