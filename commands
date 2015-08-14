@@ -3,7 +3,7 @@ set -e;
 
 # Check if name is specified
 if [[ $1 == postgresql:* ]]; then
-    if [ -z "$2" ] && [ "$1" != postgresql:list ]; then
+    if [ -z $2 ] && [ $1 != postgresql:list ]; then
         echo "You must specify an app name"
         exit 1
     else
@@ -19,8 +19,8 @@ fi
 
 # Create .postgresql diretory if not exists
 if [[ ! -d $DOKKU_ROOT/.postgresql ]]; then
-    mkdir -p "$DOKKU_ROOT/.postgresql"
-    chown -R dokku: "$DOKKU_ROOT/.postgresql"
+    mkdir -p $DOKKU_ROOT/.postgresql
+    chown -R dokku: $DOKKU_ROOT/.postgresql
 fi
 
 function check_postgresql_container() {
@@ -32,7 +32,7 @@ function check_postgresql_container() {
 
 function check_postgresql_tool() {
     local tool_name="$1"
-    if [[ $(whereis "$tool_name" | awk '{ print NF }') -eq 1 ]]; then
+    if [[ $(whereis $tool_name | awk '{ print NF }') -eq 1 ]]; then
         echo "'${tool_name}' not found. Is the package 'postgresql-client' installed?" 1>&2
         exit 1
     fi
@@ -40,19 +40,19 @@ function check_postgresql_tool() {
 
 function get_postgresql_id() {
     ID=$(docker ps | grep postgresql/"$APP":latest | awk {'print $1'})
-    echo "$ID"
+    echo $ID
 }
 
 function get_postgresql_ip() {
     ID=$(get_postgresql_id)
-    IP=$(docker inspect --format '{{ .NetworkSettings.Gateway }}' "$ID")
-    echo "$IP"
+    IP=$(docker inspect --format '{{ .NetworkSettings.Gateway }}' $ID)
+    echo $IP
 }
 
 function get_postgresql_port() {
     ID=$(get_postgresql_id)
     PORT=$(docker port "$ID" 5432 | sed 's/0.0.0.0://')
-    echo "$PORT"
+    echo $PORT
 }
 
 
@@ -61,7 +61,7 @@ function connect_to_db() {
     IP=$(get_postgresql_ip)
     PORT=$(get_postgresql_port)
 
-    psql -h "$IP" -p "$PORT" -U root db
+    psql -h $IP -p $PORT -U root db
 }
 
 case "$1" in
@@ -72,11 +72,10 @@ case "$1" in
     connect_to_db
     ;;
 
-
   postgresql:create)
     DB_IMAGE=postgresql/$APP
     # Check if DB container is installed
-    IMAGE=$(docker images | grep "atsoy/postgresql " |  awk '{print $3}')
+    IMAGE=$(docker images | grep "kloadut/postgresql " |  awk '{print $3}')
     if [[ -z $IMAGE ]]; then
         echo "PostgreSQL image not found... Did you run 'dokku plugins-install' ?"
         exit 1
@@ -95,7 +94,7 @@ case "$1" in
         chmod 700 "$DOKKU_ROOT/.postgresql/pwd_$APP"
     fi
     # Fork DB image
-    ID=$(docker run -d atsoy/postgresql echo '')
+    ID=$(docker run -d kloadut/postgresql echo '')
     docker wait $ID > /dev/null
     IMAGE=$(docker commit $ID)
     docker tag $IMAGE $DB_IMAGE
@@ -104,7 +103,7 @@ case "$1" in
     sleep 4
     # Rename persistent volume
     if [[ ! -f "$DOKKU_ROOT/.postgresql/volume_$APP" ]]; then
-        VOLUME_PATH=$(docker inspect $ID | grep /mnt/postgresql/$APP | awk '{print $2}' | sed -e's/"//g')
+        VOLUME_PATH=$(docker inspect $ID | grep /var/lib/docker/vfs/dir/ | awk '{print $2}' | sed -e's/"//g')
         if [[ -z $VOLUME_PATH ]]; then
             echo "Your docker version is too old, please update it"
             exit 1
@@ -139,8 +138,8 @@ case "$1" in
         rm -f "$DOKKU_ROOT/.postgresql/pwd_$APP"
     fi
     # Remove persistent volume
-    if [[ -f "/mnt/postgresql/$APP" ]]; then
-        rm -f "/mnt/postgresql/$APP"
+    if [[ -f "$DOKKU_ROOT/.postgresql/volume_$APP" ]]; then
+        rm -f "$DOKKU_ROOT/.postgresql/volume_$APP"
     fi
 
     echo
@@ -220,12 +219,8 @@ case "$1" in
   postgresql:restore)
     check_postgresql_container
     check_postgresql_tool psql
-    connect_to_db pg_restore
+    connect_to_db
 
-    IP=$(get_postgresql_ip)
-    PORT=$(get_postgresql_port)
-
-    pg_restore -h $IP -p $PORT -d db
     echo
     echo "-----> $APP database restored"
     ;;
