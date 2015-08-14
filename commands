@@ -81,8 +81,8 @@ case "$1" in
         exit 1
     fi
     # Check if an existing DB volume exists
-    if [[ -f "$DOKKU_ROOT/.postgresql/volume_$APP" ]]; then
-        VOLUME="`cat $DOKKU_ROOT/.postgresql/volume_$APP`:/opt/postgresql"
+    if [[ -f "/mnt/postgresql/$APP" ]]; then
+        VOLUME="`cat /mnt/postgresql/$APP`:/opt/postgresql"
         echo
         echo "-----> Reusing postgresql/$APP database"
     else
@@ -102,13 +102,13 @@ case "$1" in
     ID=$(docker run -v $VOLUME -p 5432 -d $DB_IMAGE /usr/bin/start_pgsql.sh $DB_PASSWORD)
     sleep 4
     # Rename persistent volume
-    if [[ ! -f "$DOKKU_ROOT/.postgresql/volume_$APP" ]]; then
+    if [[ ! -f "/mnt/postgresql/$APP" ]]; then
         VOLUME_PATH=$(docker inspect $ID | grep /var/lib/docker/vfs/dir/ | awk '{print $2}' | sed -e's/"//g')
         if [[ -z $VOLUME_PATH ]]; then
             echo "Your docker version is too old, please update it"
             exit 1
         fi
-        echo $VOLUME_PATH > "$DOKKU_ROOT/.postgresql/volume_$APP"
+        echo $VOLUME_PATH > "/mnt/postgresql/$APP"
     fi
     # Link to a potential existing app
     dokku postgresql:link $APP $APP
