@@ -33,6 +33,7 @@ if [[ -n $PG_APP_IMAGE_ID ]]; then
             echo "Folder successfully created"
         else
             echo "Folder already exists"
+        fi
         PG_BACKUP="/mnt/postgresql/$APP"
 
         echo "Mounting $APP PostgreSQL DB folder to Backup folder"
