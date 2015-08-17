@@ -89,6 +89,8 @@ case "$1" in
     # Rename persistent volume
     if [[ ! -f "$DOKKU_ROOT/.postgresql/volume_$APP" ]]; then
         if [[ -z "$2" ]]; then
+            VOLUME_PATH=$(docker inspect $ID | grep /var/lib/docker/vfs/dir/ | awk '{print $2}' | sed -e's/"//g')
+        else
             if [[ -d $2 ]]; then
                 echo "$2 is a directory"
             elif [[ -f $2 ]]; then
@@ -99,9 +101,9 @@ case "$1" in
                 exit 1
             fi
             VOLUME_PATH="$2"
-        else
-            VOLUME_PATH=$(docker inspect $ID | grep /var/lib/docker/vfs/dir/ | awk '{print $2}' | sed -e's/"//g')
         fi
+        echo "Linking postgres data to $VOLUME_PATH"
+
         if [[ -z $VOLUME_PATH ]]; then
             echo "Your docker version is too old, please update it"
             exit 1
