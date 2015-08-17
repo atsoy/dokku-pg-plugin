@@ -101,7 +101,7 @@ case "$1" in
             VOLUME_PATH="$2"
         else
             VOLUME_PATH=$(docker inspect $ID | grep /var/lib/docker/vfs/dir/ | awk '{print $2}' | sed -e's/"//g')
-
+        fi
         if [[ -z $VOLUME_PATH ]]; then
             echo "Your docker version is too old, please update it"
             exit 1
