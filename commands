@@ -88,17 +88,17 @@ case "$1" in
     sleep 4
     # Rename persistent volume
     if [[ ! -f "$DOKKU_ROOT/.postgresql/volume_$APP" ]]; then
-        if [[ -z "$2" ]]; then
+        if [[ -z "$3" ]]; then
             VOLUME_PATH=$(docker inspect $ID | grep /var/lib/docker/vfs/dir/ | awk '{print $2}' | sed -e's/"//g')
         else
-            if [[ -d $2 ]]; then
-                echo "$2 is a directory"
-                VOLUME_PATH="$2"
-            elif [[ -f $2 ]]; then
-                echo "$2 is a file. directory required!"
+            if [[ -d $3 ]]; then
+                echo "$3 is a directory"
+                VOLUME_PATH="$3"
+            elif [[ -f $3 ]]; then
+                echo "$3 is a file. directory required!"
                 exit 1
             else
-                echo "$2 is not a valid path. Choosing default"
+                echo "$3 is not a valid path. Choosing default"
                 VOLUME_PATH=$(docker inspect $ID | grep /var/lib/docker/vfs/dir/ | awk '{print $2}' | sed -e's/"//g')
             fi
         fi
