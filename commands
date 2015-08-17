@@ -56,22 +56,7 @@ function get_postgresql_port() {
 }
 
 
-function connect_to_db() {
-    export PGPASSWORD=$(cat "$DOKKU_ROOT/.postgresql/pwd_$APP")
-    IP=$(get_postgresql_ip)
-    PORT=$(get_postgresql_port)
-
-    psql -h $IP -p $PORT -U root db
-}
-
 case "$1" in
-
-  postgresql:console)
-    check_postgresql_container
-    check_postgresql_tool psql
-    connect_to_db
-    ;;
-
   postgresql:create)
     DB_IMAGE=postgresql/$APP
     # Check if DB container is installed
@@ -103,7 +88,20 @@ case "$1" in
     sleep 4
     # Rename persistent volume
     if [[ ! -f "$DOKKU_ROOT/.postgresql/volume_$APP" ]]; then
-        VOLUME_PATH=$(docker inspect $ID | grep /var/lib/docker/vfs/dir/ | awk '{print $2}' | sed -e's/"//g')
+        if [[ -z "$2" ]]; then
+            if [[ -d $2 ]]; then
+                echo "$2 is a directory"
+            elif [[ -f $2 ]]; then
+                echo "$2 is a file. directory required!"
+                exit 1
+            else
+                echo "$2 is not valid"
+                exit 1
+            fi
+            VOLUME_PATH="$2"
+        else
+            VOLUME_PATH=$(docker inspect $ID | grep /var/lib/docker/vfs/dir/ | awk '{print $2}' | sed -e's/"//g')
+
         if [[ -z $VOLUME_PATH ]]; then
             echo "Your docker version is too old, please update it"
             exit 1
@@ -144,20 +142,6 @@ case "$1" in
 
     echo
     echo "-----> PostgreSQL container deleted: $DB_IMAGE"
-    ;;
-
-  postgresql:dump)
-    check_postgresql_container
-    check_postgresql_tool pg_dump
-    export PGPASSWORD=$(cat "$DOKKU_ROOT/.postgresql/pwd_$APP")
-    IP=$(get_postgresql_ip)
-    PORT=$(get_postgresql_port)
-
-    pg_dump -h $IP -p $PORT -U root -c -O db
-
-    # echo to stderr, as stdout will probably be redirected to a file
-    echo 1>&2
-    echo "-----> $APP database dumped" 1>&2
     ;;
 
   postgresql:info)
@@ -216,26 +200,14 @@ case "$1" in
     fi
     ;;
 
-  postgresql:restore)
-    check_postgresql_container
-    check_postgresql_tool psql
-    connect_to_db
-
-    echo
-    echo "-----> $APP database restored"
-    ;;
-
   help)
     cat && cat<<EOF
-    postgresql:console <db>                        Open a PostgreSQL console
-    postgresql:create <db>                         Create a PostgreSQL container
+    postgresql:create <db> [<localpath>]           Create a PostgreSQL container
     postgresql:delete <db>                         Delete specified PostgreSQL container
-    postgresql:dump <db> > dump_file.sql           Dump database data
     postgresql:info <db>                           Display database informations
     postgresql:link <app> <db>                     Link an app to a PostgreSQL database
     postgresql:list                                Display list of PostgreSQL containers
     postgresql:logs <db>                           Display last logs from PostgreSQL container
-    postgresql:restore <db> < dump_file.sql        Restore database data from a previous dump
 EOF
     ;;
 
