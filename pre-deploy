@@ -26,19 +26,6 @@ if [[ -n $PG_APP_IMAGE_ID ]]; then
     else
         echo "stopped."
 
-        PG_DATA=$(cat $DOKKU_ROOT/.postgresql/volume_$APP)
-
-        if [[ ! -d /mnt/postgresql/$APP ]]; then
-            mkdir -p /mnt/postgresql/$APP
-            echo "Folder successfully created"
-        else
-            echo "Folder already exists"
-        fi
-        PG_BACKUP="/mnt/postgresql/$APP"
-
-        echo "Mounting $APP PostgreSQL DB folder to Backup folder"
-        mount $PG_DATA $PG_BACKUP
-
         PG_VOLUME="`cat $DOKKU_ROOT/.postgresql/volume_$APP`:/opt/postgresql"
 
         echo -n "       Launching $PG_APP_IMAGE... "
