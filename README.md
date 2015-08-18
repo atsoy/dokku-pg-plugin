@@ -52,7 +52,7 @@ $ ssh dokku@server postgresql:create foo </mnt/foo> # Client side
        Database: 'db'
        Public port: 49187
 ```
-- `</mnt/foo>` - optional mount point for your `/opt/postgresql` folder inside container. (You have to create your mount point folder before).
+- `</mnt/foo>` - optional local mount point for your `/opt/postgresql` folder inside container. (You have to create your mount point folder before).
 - without `<mount point>` it will use standard path `/var/lib/docker/vfs/dir/%container_id%`
 
 
