@@ -3,7 +3,7 @@ PostgreSQL plugin for Dokku
 
 Project: https://github.com/progrium/dokku
 
-PostgreSQL version 9.4
+####PostgreSQL version 9.4
 Removed dump + restore.
 Added mount options.
 
@@ -18,7 +18,7 @@ Installation
 ------------
 ```
 cd /var/lib/dokku/plugins
-git clone https://github.com/atsoy/dokku-pg-plugin postgresql
+git clone https://github.com/netsyno/dokku-pg-plugin postgresql
 dokku plugins-install
 ```
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
 # Build docker image
-git clone https://github.com/atsoy/dokku-pg-dockerfiles /tmp/dokku-pg-dockerfiles
-docker build -q=true -t atsoy/postgresql /tmp/dokku-pg-dockerfiles
+git clone https://github.com/netsyno/dokku-pg-dockerfiles /tmp/dokku-pg-dockerfiles
+docker build -q=true -t netsyno/postgresql /tmp/dokku-pg-dockerfiles
 rm -rf /tmp/dokku-pg-dockerfiles

@@ -60,7 +60,7 @@ case "$1" in
   postgresql:create)
     DB_IMAGE=postgresql/$APP
     # Check if DB container is installed
-    IMAGE=$(docker images | grep "atsoy/postgresql " |  awk '{print $3}')
+    IMAGE=$(docker images | grep "netsyno/postgresql " |  awk '{print $3}')
     if [[ -z $IMAGE ]]; then
         echo "PostgreSQL image not found... Did you run 'dokku plugins-install' ?"
         exit 1
@@ -79,7 +79,7 @@ case "$1" in
         chmod 700 "$DOKKU_ROOT/.postgresql/pwd_$APP"
     fi
     # Fork DB image
-    ID=$(docker run -d atsoy/postgresql echo '')
+    ID=$(docker run -d netsyno/postgresql echo '')
     docker wait $ID > /dev/null
     IMAGE=$(docker commit $ID)
     docker tag $IMAGE $DB_IMAGE
