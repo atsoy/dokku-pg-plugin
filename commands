@@ -71,7 +71,7 @@ case "$1" in
         echo
         echo "-----> Reusing postgresql/$APP database"
     else
-        VOLUME="/mnt/$APP/postgresql:/opt/postgresql"
+        VOLUME="mnt/$APP/postgresql:/opt/postgresql"
         # Generate a random password for DB user
         DB_PASSWORD=$(< /dev/urandom tr -dc A-Za-z0-9 | head -c 16)
         echo $DB_PASSWORD > "$DOKKU_ROOT/.postgresql/pwd_$APP"
@@ -89,7 +89,7 @@ case "$1" in
     # Rename persistent volume
     if [[ ! -f "$DOKKU_ROOT/.postgresql/volume_$APP" ]]; then
         if [[ -z "$3" ]]; then
-            VOLUME_PATH=$(docker inspect $ID | grep /mnt/$APP/postgresql | awk '{print $2}' | sed -e's/"//g')
+            VOLUME_PATH="/mnt/$APP/postgresql"
         else
             if [[ -d $3 ]]; then
                 echo "$3 is a directory"
@@ -99,7 +99,7 @@ case "$1" in
                 exit 1
             else
                 echo "$3 is not a valid path. Choosing default"
-                VOLUME_PATH=$(docker inspect $ID | grep /mnt/$APP/postgresql | awk '{print $2}' | sed -e's/"//g')
+                VOLUME_PATH="/mnt/$APP/postgresql"
             fi
         fi
         echo "Linking postgres data to $VOLUME_PATH"
