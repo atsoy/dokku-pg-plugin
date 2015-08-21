@@ -71,7 +71,7 @@ case "$1" in
         echo
         echo "-----> Reusing postgresql/$APP database"
     else
-        VOLUME="mnt/$APP/postgresql:/opt/postgresql"
+        VOLUME="/mnt/$APP/postgresql:/opt/postgresql"
         # Generate a random password for DB user
         DB_PASSWORD=$(< /dev/urandom tr -dc A-Za-z0-9 | head -c 16)
         echo $DB_PASSWORD > "$DOKKU_ROOT/.postgresql/pwd_$APP"
